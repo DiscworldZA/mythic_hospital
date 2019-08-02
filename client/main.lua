@@ -6,6 +6,7 @@ local pillboxTeleports = {
 }
 
 local bedOccupying = nil
+local bedObject = nil
 local bedOccupyingData = nil
 
 local cam = nil
@@ -30,6 +31,8 @@ function LeaveBed()
     RenderScriptCams(0, true, 200, true, true)
     DestroyCam(cam, false)
 
+    SetEntityInvincible(PlayerPedId(), false)
+
     SetEntityHeading(PlayerPedId(), bedOccupyingData.h - 90)
     TaskPlayAnim(PlayerPedId(), getOutDict , getOutAnim ,8.0, -8.0, -1, 0, 0, false, false, false )
     Citizen.Wait(5000)
@@ -37,7 +40,10 @@ function LeaveBed()
     FreezeEntityPosition(PlayerPedId(), false)
     TriggerServerEvent('mythic_hospital:server:LeaveBed', bedOccupying)
 
+    FreezeEntityPosition(bedObject, false)
+    
     bedOccupying = nil
+    bedObject = nil
     bedOccupyingData = nil
 end
 
@@ -51,7 +57,10 @@ AddEventHandler('mythic_hospital:client:RPSendToBed', function(id, data)
     bedOccupying = id
     bedOccupyingData = data
 
-    SetEntityCoords(PlayerPedId(), data.x, data.y, data.z - 0.5)
+    bedObject = GetClosestObjectOfType(data.x, data.y, data.z, 1.0, data.model, false, false, false)
+    FreezeEntityPosition(bedObject, true)
+
+    SetEntityCoords(PlayerPedId(), data.x, data.y, data.z)
     
     RequestAnimDict(inBedDict)
     while not HasAnimDictLoaded(inBedDict) do
@@ -67,6 +76,8 @@ AddEventHandler('mythic_hospital:client:RPSendToBed', function(id, data)
     AttachCamToPedBone(cam, PlayerPedId(), 31085, 0, 0, 1.0 , true)
     SetCamFov(cam, 90.0)
     SetCamRot(cam, -90.0, 0.0, GetEntityHeading(PlayerPedId()) + 180, true)
+
+    SetEntityInvincible(PlayerPedId(), true)
             
 
     Citizen.CreateThread(function()
@@ -85,13 +96,17 @@ AddEventHandler('mythic_hospital:client:SendToBed', function(id, data)
     bedOccupying = id
     bedOccupyingData = data
 
-    SetEntityCoords(PlayerPedId(), data.x, data.y, data.z - 0.3)
+    bedObject = GetClosestObjectOfType(data.x, data.y, data.z, 1.0, data.model, false, false, false)
+    FreezeEntityPosition(bedObject, true)
+
+    SetEntityCoords(PlayerPedId(), data.x, data.y, data.z)
     RequestAnimDict(inBedDict)
     while not HasAnimDictLoaded(inBedDict) do
         Citizen.Wait(0)
     end
     TaskPlayAnim(PlayerPedId(), inBedDict , inBedAnim ,8.0, -8.0, -1, 1, 0, false, false, false )
     SetEntityHeading(PlayerPedId(), data.h + 180)
+    SetEntityInvincible(PlayerPedId(), true)
 
     cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", 1)
     SetCamActive(cam, true)
@@ -105,7 +120,7 @@ AddEventHandler('mythic_hospital:client:SendToBed', function(id, data)
         local player = PlayerPedId()
 
         exports['mythic_notify']:DoHudText('inform', 'Doctors Are Treating You')
-        Citizen.Wait(5000)
+        Citizen.Wait(Config.AIHealTimer * 1000)
         TriggerServerEvent('mythic_hospital:server:EnteredBed')
     end)
 end)
@@ -133,7 +148,7 @@ Citizen.CreateThread(function()
                 DrawMarker(27, hospitalCheckin.x, hospitalCheckin.y, hospitalCheckin.z - 0.99, 0, 0, 0, 0, 0, 0, 0.5, 0.5, 1.0, 1, 157, 0, 155, false, false, 2, false, false, false, false)
 
                 if not IsPedInAnyVehicle(PlayerPedId(), true) then
-                    if distance < 1 then
+                    if distance < 3 then
                         PrintHelpText('Press ~INPUT_CONTEXT~ ~s~to check in')
                         if IsControlJustReleased(0, 54) then
                             if (GetEntityHealth(PlayerPedId()) < 200) or (IsInjuredOrBleeding()) then
@@ -141,7 +156,7 @@ Citizen.CreateThread(function()
                                     name = "hospital_action",
                                     duration = 10500,
                                     label = "Checking In",
-                                    useWhileDead = false,
+                                    useWhileDead = true,
                                     canCancel = true,
                                     controlDisables = {
                                         disableMovement = true,

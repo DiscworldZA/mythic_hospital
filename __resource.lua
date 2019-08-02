@@ -5,6 +5,7 @@ description 'Mythic Framework Hospital & Damage System'
 version '1.0.0'
 
 client_scripts {
+	'config.lua',
 	'client/wound.lua',
 	'client/main.lua',
 	'client/items.lua',
@@ -22,6 +23,8 @@ dependencies {
 
 exports {
     'IsInjuredOrBleeding',
+	'DoLimbAlert',
+	'DoBleedAlert',
 }
 
 server_exports {
