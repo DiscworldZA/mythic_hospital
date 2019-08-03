@@ -302,7 +302,7 @@ function CheckDamage(ped, bone, weapon)
                 end
             elseif weapon == Config.WeaponClasses['HIGH_CALIBER'] or weapon == Config.WeaponClasses['HEAVY_IMPACT'] or weapon == Config.WeaponClasses['SHOTGUN'] or weapon == Config.WeaponClasses['EXPLOSIVE'] then
                 if (Config.Bones[bone] == 'UPPER_BODY' or Config.Bones[bone] == 'LOWER_BODY' or Config.Bones[bone] == 'SPINE') and (weapon == Config.WeaponClasses['HIGH_CALIBER'] or weapon == Config.WeaponClasses['SHOTGUN']) then
-                    if GetPedArmour(player) > 0 then
+                    if GetPedArmour(ped) > 0 then
                         local chance = math.random(100)
                         if chance <= math.ceil(Config.BodyArmorStaggerChance) then
                             SetPedToRagdoll(PlayerPedId(), 1500, 2000, 3, true, true, false)
@@ -576,7 +576,7 @@ Citizen.CreateThread(function()
             if math.floor(bleedTickTimer % (Config.BleedTickRate / 10)) == 0 then
                 local currPos = GetEntityCoords(player, true)
                 local moving = #(vector2(prevPos.x, prevPos.y) - vector2(currPos.x, currPos.y))
-                if (moving > 1) and isBleeding > 2 then
+                if (moving > 1 and not IsPedInAnyVehicle(player)) and isBleeding > 2 then
                     exports['mythic_notify']:PersistentHudText('start', bleedMoveNotifId, 'inform', 'You notice blood oozing from your wounds faster when you\'re moving', { ['background-color'] = '#4d0e96' })
                     advanceBleedTimer = advanceBleedTimer + Config.BleedMovementAdvance
                     bleedTickTimer = bleedTickTimer + Config.BleedMovementTick
