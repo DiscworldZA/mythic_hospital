@@ -599,8 +599,6 @@ end)
 
 Citizen.CreateThread(function()
     while true do
-        local player = PlayerPedId()
-        
         local ped = PlayerPedId()
         local health = GetEntityHealth(ped)
         local armor = GetPedArmour(ped)
@@ -609,44 +607,37 @@ Citizen.CreateThread(function()
             playerHealth = health
         end
 
-        if not playerArmour then
-            playerArmour = armor
+        if not playerArmor then
+            playerArmor = armor
         end
 
-        if player ~= ped then
-            player = ped
-            playerHealth = health
-            playerArmour = armor
-        end
-
-
-        local armorDamaged = (playerArmour ~= armor and armor < (playerArmour - Config.ArmorDamage) and armor > 0) -- Players armor was damaged
+        local armorDamaged = (playerArmor ~= armor and armor < (playerArmor - Config.ArmorDamage) and armor > 0) -- Players armor was damaged
         local healthDamaged = (playerHealth ~= health and health < (playerHealth - Config.HealthDamage)) -- Players health was damaged
         
         if armorDamaged or healthDamaged then
-            local hit, bone = GetPedLastDamageBone(player)
+            local hit, bone = GetPedLastDamageBone(ped)
             local bodypart = Config.Bones[bone]
 
             if hit and bodypart ~= 'NONE' then
                 local checkDamage = true
-                local weapon = GetDamagingWeapon(player)
+                local weapon = GetDamagingWeapon(ped)
                 if weapon ~= nil then
                     if armorDamaged and (bodypart == 'SPINE' or bodypart == 'LOWER_BODY') and weapon <= Config.WeaponClasses['LIGHT_IMPACT'] and weapon ~= Config.WeaponClasses['NOTHING'] then
                         checkDamage = false -- Don't check damage if the it was a body shot and the weapon class isn't that strong
                     end
 
                     if checkDamage then
-                        CheckDamage(player, bone, weapon)
+                        CheckDamage(ped, bone, weapon)
                     end
                 end
             end
         end
 
         playerHealth = health
-        playerArmour = armor
+        playerArmor = armor
         Citizen.Wait(500)
 
-		ProcessDamage(player)
+		ProcessDamage(ped)
 		Citizen.Wait(500)
 	end
 end)
