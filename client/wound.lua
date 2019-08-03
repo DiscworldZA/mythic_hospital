@@ -93,7 +93,7 @@ function ProcessRunStuff(ped)
         SetPedMoveRateOverride(ped, Config.MovementRate[level])
 
         if wasOnPainKillers then
-            SetPedToRagdoll(PlayerPedId(), 1500, 2000, 3, true, true, false)
+            SetPedToRagdoll(ped, 1500, 2000, 3, true, true, false)
             wasOnPainKillers = false
             exports['mythic_notify']:DoCustomHudText('inform', 'You\'ve Realized Doing Drugs Does Not Fix All Your Problems', 5000)
         end
@@ -120,13 +120,13 @@ function ProcessDamage(ped)
                             if chance <= Config.LegInjuryChance.Running then
                                 exports['mythic_notify']:DoCustomHudText('inform', 'You\'re Having A Hard Time Running', 5000)
                                 ShakeGameplayCam('SMALL_EXPLOSION_SHAKE', 0.08) -- change this float to increase/decrease camera shake
-                                SetPedToRagdollWithFall(PlayerPedId(), 1500, 2000, 1, GetEntityForwardVector(ped), 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+                                SetPedToRagdollWithFall(ped, 1500, 2000, 1, GetEntityForwardVector(ped), 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
                             end
                         else
                             if chance <= Config.LegInjuryChance.Walking then
                                 exports['mythic_notify']:DoCustomHudText('inform', 'You\'re Having A Hard Using Your Legs', 5000)
                                 ShakeGameplayCam('SMALL_EXPLOSION_SHAKE', 0.08) -- change this float to increase/decrease camera shake
-                                SetPedToRagdollWithFall(PlayerPedId(), 1500, 2000, 1, GetEntityForwardVector(ped), 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+                                SetPedToRagdollWithFall(ped, 1500, 2000, 1, GetEntityForwardVector(ped), 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
                             end
                         end
                     end
@@ -142,7 +142,7 @@ function ProcessDamage(ped)
                         local isDisabled = 15
                         Citizen.CreateThread(function()
                             while isDisabled > 0 do
-                                if IsPedInAnyVehicle(PlayerPedId(), true) then
+                                if IsPedInAnyVehicle(ped, true) then
                                     DisableControlAction(0, 63, true) -- veh turn left
                                 end
 
@@ -158,7 +158,7 @@ function ProcessDamage(ped)
                         local isDisabled = 15
                         Citizen.CreateThread(function()
                             while isDisabled > 0 do
-                                if IsPedInAnyVehicle(PlayerPedId(), true) then
+                                if IsPedInAnyVehicle(ped, true) then
                                     DisableControlAction(0, 63, true) -- veh turn left
                                 end
 
@@ -205,7 +205,7 @@ function ProcessDamage(ped)
         end
 
         if wasOnDrugs then
-            SetPedToRagdoll(PlayerPedId(), 1500, 2000, 3, true, true, false)
+            SetPedToRagdoll(ped, 1500, 2000, 3, true, true, false)
             wasOnDrugs = false
             exports['mythic_notify']:DoCustomHudText('inform', 'You\'ve Realized Doing Drugs Does Not Fix All Your Problems', 5000)
         end
@@ -226,17 +226,16 @@ function CheckDamage(ped, bone, weapon)
             BodyParts[Config.Bones[bone]].isDamaged = true
             BodyParts[Config.Bones[bone]].severity = 1
             --exports['mythic_notify']:DoHudText('inform', 'Your ' .. BodyParts[Config.Bones[bone]].label .. ' feels ' .. Config.WoundStates[BodyParts[Config.Bones[bone]].severity])
-            local player = PlayerPedId()
             if weapon == Config.WeaponClasses['SMALL_CALIBER'] or weapon == Config.WeaponClasses['MEDIUM_CALIBER'] or weapon == Config.WeaponClasses['CUTTING'] or weapon == Config.WeaponClasses['WILDLIFE'] or weapon == Config.WeaponClasses['OTHER'] or weapon == Config.WeaponClasses['LIGHT_IMPACT'] then
                 if (Config.Bones[bone] == 'UPPER_BODY' or Config.Bones[bone] == 'LOWER_BODY' or Config.Bones[bone] == 'SPINE') and (weapon == Config.WeaponClasses['SMALL_CALIBER'] or weapon == Config.WeaponClasses['MEDIUM_CALIBER']) then
-                    if GetPedArmour(player) > 0 then
+                    if GetPedArmour(ped) > 0 then
                         local chance = math.random(100)
                         if chance <= math.ceil(Config.BodyArmorStaggerChance / 2) then
-                            SetPedToRagdoll(PlayerPedId(), 1500, 2000, 2, true, true, false)
+                            SetPedToRagdoll(ped, 1500, 2000, 2, true, true, false)
                         end
                     else
                         if Config.Bones[bone] == 'SPINE' then
-                            SetPedToRagdoll(PlayerPedId(), 1500, 2000, 2, true, true, false)
+                            SetPedToRagdoll(ped, 1500, 2000, 2, true, true, false)
                         end
     
                         ApplyBleed(1)
@@ -246,10 +245,10 @@ function CheckDamage(ped, bone, weapon)
                 end
             elseif weapon == Config.WeaponClasses['HIGH_CALIBER'] or weapon == Config.WeaponClasses['HEAVY_IMPACT'] or weapon == Config.WeaponClasses['SHOTGUN'] or weapon == Config.WeaponClasses['EXPLOSIVE'] then
                 if (Config.Bones[bone] == 'UPPER_BODY' or Config.Bones[bone] == 'LOWER_BODY' or Config.Bones[bone] == 'SPINE') and (weapon == Config.WeaponClasses['HIGH_CALIBER'] or weapon == Config.WeaponClasses['SHOTGUN']) then
-                    if GetPedArmour(player) > 0 then
+                    if GetPedArmour(ped) > 0 then
                         local chance = math.random(100)
                         if chance <= math.ceil(Config.BodyArmorStaggerChance) then
-                            SetPedToRagdoll(PlayerPedId(), 1500, 2000, 3, true, true, false)
+                            SetPedToRagdoll(ped, 1500, 2000, 3, true, true, false)
                         end
 
                         if isBleeding < 1 then
@@ -260,7 +259,7 @@ function CheckDamage(ped, bone, weapon)
                         end
                     else
                         if Config.Bones[bone] == 'SPINE' then
-                            SetPedToRagdoll(PlayerPedId(), 1500, 2000, 3, true, true, false)
+                            SetPedToRagdoll(ped, 1500, 2000, 3, true, true, false)
                         end
                         ApplyBleed(2)
                     end
@@ -280,19 +279,20 @@ function CheckDamage(ped, bone, weapon)
                 isBleeding = tonumber(isBleeding)
             })
 
+            ProcessRunStuff(ped)
             DoLimbAlert()
             DoBleedAlert()
         else
             if weapon == Config.WeaponClasses['SMALL_CALIBER'] or weapon == Config.WeaponClasses['MEDIUM_CALIBER'] or weapon == Config.WeaponClasses['CUTTING'] or weapon == Config.WeaponClasses['WILDLIFE'] or weapon == Config.WeaponClasses['OTHER'] or weapon == Config.WeaponClasses['LIGHT_IMPACT'] then
                 if (Config.Bones[bone] == 'UPPER_BODY' or Config.Bones[bone] == 'LOWER_BODY' or Config.Bones[bone] == 'SPINE') and (weapon == Config.WeaponClasses['SMALL_CALIBER'] or weapon == Config.WeaponClasses['MEDIUM_CALIBER']) then
-                    if GetPedArmour(player) > 0 then
+                    if GetPedArmour(ped) > 0 then
                         local chance = math.random(100)
                         if chance <= math.ceil(Config.BodyArmorStaggerChance / 2) then
-                            SetPedToRagdoll(PlayerPedId(), 1500, 2000, 2, true, true, false)
+                            SetPedToRagdoll(ped, 1500, 2000, 2, true, true, false)
                         end
                     else
                         if Config.Bones[bone] == 'SPINE' then
-                            SetPedToRagdoll(PlayerPedId(), 1500, 2000, 2, true, true, false)
+                            SetPedToRagdoll(ped, 1500, 2000, 2, true, true, false)
                         end
     
                         ApplyBleed(1)
@@ -338,10 +338,9 @@ function CheckDamage(ped, bone, weapon)
                         v.severity = BodyParts[Config.Bones[bone]].severity
                     end
                 end
-            else
-
             end
 
+            ProcessRunStuff(ped)
             DoLimbAlert()
             DoBleedAlert()
         end
@@ -414,12 +413,26 @@ AddEventHandler('mythic_hospital:client:FieldTreatLimbs', function()
             v.severity = BodyParts[Config.Bones[bone]].severity
         end
     end
+    
+    TriggerServerEvent('mythic_hospital:server:SyncInjuries', {
+        limbs = BodyParts,
+        isBleeding = tonumber(isBleeding)
+    })
+
+    ProcessRunStuff(PlayerPedId())
     DoLimbAlert()
 end)
 RegisterNetEvent('mythic_hospital:client:FieldTreatBleed')
 AddEventHandler('mythic_hospital:client:FieldTreatBleed', function()
     if isBleeding > 1 then
         isBleeding = tonumber(isBleeding) - 1
+    
+        TriggerServerEvent('mythic_hospital:server:SyncInjuries', {
+            limbs = BodyParts,
+            isBleeding = tonumber(isBleeding)
+        })
+
+        ProcessRunStuff(PlayerPedId())
         DoBleedAlert()
     end
 end)
@@ -428,6 +441,13 @@ RegisterNetEvent('mythic_hospital:client:ReduceBleed')
 AddEventHandler('mythic_hospital:client:ReduceBleed', function()
     if isBleeding > 0 then
         isBleeding = tonumber(isBleeding) - 1
+    
+        TriggerServerEvent('mythic_hospital:server:SyncInjuries', {
+            limbs = BodyParts,
+            isBleeding = tonumber(isBleeding)
+        })
+
+        ProcessRunStuff(PlayerPedId())
         DoBleedAlert()
     end
 end)
@@ -440,12 +460,26 @@ AddEventHandler('mythic_hospital:client:ResetLimbs', function()
         v.severity = 0
     end
     injured = {}
+    
+    TriggerServerEvent('mythic_hospital:server:SyncInjuries', {
+        limbs = BodyParts,
+        isBleeding = tonumber(isBleeding)
+    })
+
+    ProcessRunStuff(PlayerPedId())
     DoLimbAlert()
 end)
 
 RegisterNetEvent('mythic_hospital:client:RemoveBleed')
 AddEventHandler('mythic_hospital:client:RemoveBleed', function()
     isBleeding = 0
+    
+    TriggerServerEvent('mythic_hospital:server:SyncInjuries', {
+        limbs = BodyParts,
+        isBleeding = tonumber(isBleeding)
+    })
+
+    ProcessRunStuff(PlayerPedId())
     DoBleedAlert()
 end)
 
@@ -456,6 +490,7 @@ AddEventHandler('mythic_hospital:client:UsePainKiller', function(tier)
     end
 
     exports['mythic_notify']:DoCustomHudText('inform', 'You feel the pain subside temporarily', 5000)
+    ProcessRunStuff(PlayerPedId())
 end)
 
 RegisterNetEvent('mythic_hospital:client:UseAdrenaline')
@@ -465,6 +500,7 @@ AddEventHandler('mythic_hospital:client:UseAdrenaline', function(tier)
     end
 
     exports['mythic_notify']:DoCustomHudText('inform', 'You\'re Able To Ignore Your Body Failing', 5000)
+    ProcessRunStuff(PlayerPedId())
 end)  
 
 local prevPos = nil
@@ -608,13 +644,10 @@ Citizen.CreateThread(function()
 
         playerHealth = health
         playerArmour = armor
-        Citizen.Wait(333)
-
-		ProcessRunStuff(player)
-		Citizen.Wait(333)
+        Citizen.Wait(500)
 
 		ProcessDamage(player)
-		Citizen.Wait(333)
+		Citizen.Wait(500)
 	end
 end)
 
