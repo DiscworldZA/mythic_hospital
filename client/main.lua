@@ -41,7 +41,7 @@ function LeaveBed()
     TriggerServerEvent('mythic_hospital:server:LeaveBed', bedOccupying)
 
     FreezeEntityPosition(bedObject, false)
-    
+
     bedOccupying = nil
     bedObject = nil
     bedOccupyingData = nil
@@ -61,7 +61,7 @@ AddEventHandler('mythic_hospital:client:RPSendToBed', function(id, data)
     FreezeEntityPosition(bedObject, true)
 
     SetEntityCoords(PlayerPedId(), data.x, data.y, data.z)
-    
+
     RequestAnimDict(inBedDict)
     while not HasAnimDictLoaded(inBedDict) do
         Citizen.Wait(0)
@@ -78,7 +78,7 @@ AddEventHandler('mythic_hospital:client:RPSendToBed', function(id, data)
     SetCamRot(cam, -90.0, 0.0, GetEntityHeading(PlayerPedId()) + 180, true)
 
     SetEntityInvincible(PlayerPedId(), true)
-            
+
 
     Citizen.CreateThread(function()
         while bedOccupyingData ~= nil do
@@ -127,7 +127,7 @@ end)
 
 RegisterNetEvent('mythic_hospital:client:FinishServices')
 AddEventHandler('mythic_hospital:client:FinishServices', function()
-	SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()))
+    SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()))
     TriggerEvent('mythic_hospital:client:RemoveBleed')
     TriggerEvent('mythic_hospital:client:ResetLimbs')
     exports['mythic_notify']:DoHudText('inform', 'You\'ve Been Treated & Billed')
