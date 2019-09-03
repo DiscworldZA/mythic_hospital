@@ -505,9 +505,7 @@ end)
 
 local prevPos = nil
 Citizen.CreateThread(function()
-    while exports['mythic_notify'] == nil do
-        Citizen.Wait(100)
-    end
+    Citizen.Wait(2500)
     prevPos = GetEntityCoords(PlayerPedId(), true)
     while true do
         local player = PlayerPedId()
