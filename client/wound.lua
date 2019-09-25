@@ -485,7 +485,7 @@ end)
 
 RegisterNetEvent('mythic_hospital:client:UsePainKiller')
 AddEventHandler('mythic_hospital:client:UsePainKiller', function(tier)
-    if tier < 4 then
+    if tier < 10 then
         onPainKiller = 90 * tier
     end
 
@@ -495,7 +495,7 @@ end)
 
 RegisterNetEvent('mythic_hospital:client:UseAdrenaline')
 AddEventHandler('mythic_hospital:client:UseAdrenaline', function(tier)
-    if tier < 4 then
+    if tier < 10 then
         onDrugs = 180 * tier
     end
 
