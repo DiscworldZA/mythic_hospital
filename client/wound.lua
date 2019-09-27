@@ -240,8 +240,6 @@ function CheckDamage(ped, bone, weapon)
 
                         ApplyBleed(1)
                     end
-                else
-                    ApplyBleed(1)
                 end
             elseif weapon == Config.WeaponClasses['HIGH_CALIBER'] or weapon == Config.WeaponClasses['HEAVY_IMPACT'] or weapon == Config.WeaponClasses['SHOTGUN'] or weapon == Config.WeaponClasses['EXPLOSIVE'] then
                 if (Config.Bones[bone] == 'UPPER_BODY' or Config.Bones[bone] == 'LOWER_BODY' or Config.Bones[bone] == 'SPINE') and (weapon == Config.WeaponClasses['HIGH_CALIBER'] or weapon == Config.WeaponClasses['SHOTGUN']) then
@@ -264,7 +262,7 @@ function CheckDamage(ped, bone, weapon)
                         ApplyBleed(2)
                     end
                 else
-                    ApplyBleed(2)
+                    ApplyBleed(1)
                 end
             end
 
@@ -356,6 +354,8 @@ function ApplyBleed(level)
         else
             isBleeding = isBleeding + level
         end
+        
+        DoBleedAlert()
     end
 end
 
@@ -566,8 +566,9 @@ Citizen.CreateThread(function()
 
                     if advanceBleedTimer >= Config.AdvanceBleedTimer then
                         ApplyBleed(1)
-                        DoBleedAlert()
                         advanceBleedTimer = 0
+                    else
+                        advanceBleedTimer = advanceBleedTimer + 1
                     end
 
                 end
@@ -584,7 +585,6 @@ Citizen.CreateThread(function()
                     prevPos = currPos
                 else
                     exports['mythic_notify']:PersistentAlert('end', bleedMoveNotifId)
-                    advanceBleedTimer = advanceBleedTimer + 1
                     bleedTickTimer = bleedTickTimer + 1
                 end
 
@@ -644,8 +644,6 @@ Citizen.CreateThread(function()
 end)
 
 --[[ Player Died Events ]]--
-
-
 RegisterNetEvent('baseevents:onPlayerKilled')
 AddEventHandler('baseevents:onPlayerKilled', function(killedBy, data)
     TriggerEvent('mythic_hospital:client:ResetLimbs')
