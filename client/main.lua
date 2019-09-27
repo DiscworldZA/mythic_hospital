@@ -127,7 +127,15 @@ end)
 
 RegisterNetEvent('mythic_hospital:client:FinishServices')
 AddEventHandler('mythic_hospital:client:FinishServices', function()
-    SetEntityHealth(PlayerPedId(), GetEntityMaxHealth(PlayerPedId()))
+	local player = PlayerPedId()
+	
+	if IsPedDeadOrDying(player) then
+		local playerPos = GetEntityCoords(player, true)
+		NetworkResurrectLocalPlayer(playerPos, true, true, false)
+	end
+
+    SetEntityHealth(player, GetEntityMaxHealth(PlayerPedId()))
+    SetPlayerSprint(PlayerId(), true)
     TriggerEvent('mythic_hospital:client:RemoveBleed')
     TriggerEvent('mythic_hospital:client:ResetLimbs')
     exports['mythic_notify']:DoHudText('inform', 'You\'ve Been Treated & Billed')

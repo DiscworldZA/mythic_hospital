@@ -83,15 +83,6 @@ function ProcessRunStuff(ped)
         SetPedMovementClipset(ped, "move_m@injured", 1 )
         SetPlayerSprint(PlayerId(), false)
 
-        local level = 0
-        for k, v in pairs(injured) do
-            if v.severity > level then
-                level = v.severity
-            end
-        end
-
-        SetPedMoveRateOverride(ped, Config.MovementRate[level])
-
         if wasOnPainKillers then
             SetPedToRagdoll(ped, 1500, 2000, 3, true, true, false)
             wasOnPainKillers = false
@@ -497,6 +488,25 @@ AddEventHandler('mythic_hospital:client:UseAdrenaline', function(tier)
 
     exports['mythic_notify']:DoCustomHudText('inform', 'You\'re Able To Ignore Your Body Failing', 5000)
     ProcessRunStuff(PlayerPedId())
+end)
+
+Citizen.CreateThread(function()
+	while true do
+		if #injured > 0 then
+			local level = 0
+			for k, v in pairs(injured) do
+				if v.severity > level then
+					level = v.severity
+				end
+			end
+
+			SetPedMoveRateOverride(PlayerPedId(, Config.MovementRate[level])
+			
+			Citizen.Wait(5)
+		else
+			Citizen.Wait(1000)
+		end
+	end
 end)
 
 local prevPos = nil
