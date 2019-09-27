@@ -295,8 +295,6 @@ function CheckDamage(ped, bone, weapon)
 
                         ApplyBleed(1)
                     end
-                else
-                    ApplyBleed(1)
                 end
             elseif weapon == Config.WeaponClasses['HIGH_CALIBER'] or weapon == Config.WeaponClasses['HEAVY_IMPACT'] or weapon == Config.WeaponClasses['SHOTGUN'] or weapon == Config.WeaponClasses['EXPLOSIVE'] then
                 if (Config.Bones[bone] == 'UPPER_BODY' or Config.Bones[bone] == 'LOWER_BODY' or Config.Bones[bone] == 'SPINE') and (weapon == Config.WeaponClasses['HIGH_CALIBER'] or weapon == Config.WeaponClasses['SHOTGUN']) then
@@ -319,8 +317,6 @@ function CheckDamage(ped, bone, weapon)
 
                         ApplyBleed(2)
                     end
-                else
-                    ApplyBleed(2)
                 end
             end
 
